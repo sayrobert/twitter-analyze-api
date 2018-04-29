@@ -7,7 +7,7 @@
 #
 # Hôte: 127.0.0.1 (MySQL 5.6.38)
 # Base de données: twittanalyze
-# Temps de génération: 2018-04-27 19:44:45 +0000
+# Temps de génération: 2018-04-29 10:10:07 +0000
 # ************************************************************
 
 
@@ -28,7 +28,7 @@ DROP TABLE IF EXISTS `hashtags`;
 CREATE TABLE `hashtags` (
   `id` int(11) NOT NULL,
   `id_tweet` int(11) NOT NULL,
-  `content` varchar(100) NOT NULL
+  `content` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -58,6 +58,20 @@ CREATE TABLE `user` (
   `pseudo` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+
+INSERT INTO `user` (`id`, `name`, `pseudo`)
+VALUES
+	(1976143068,'Emmanuel Macron','emmanuelmacron'),
+	(1110890216,'Edouard Philippe','ephilippepm'),
+	(213754264,'Olivier Faure','faureolivier'),
+	(19438626,'Laurent Wauquiez','laurentwauquiez'),
+	(80820758,'Jean-Luc Mélenchon','jlmelenchon'),
+	(217749896,'Marine Le Pen','mlp_officiel');
+
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 
