@@ -7,7 +7,7 @@
 #
 # Hôte: 127.0.0.1 (MySQL 5.6.38)
 # Base de données: twittanalyze
-# Temps de génération: 2018-04-29 10:10:07 +0000
+# Temps de génération: 2018-05-02 16:36:28 +0000
 # ************************************************************
 
 
@@ -26,9 +26,11 @@
 DROP TABLE IF EXISTS `hashtags`;
 
 CREATE TABLE `hashtags` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_tweet` int(11) NOT NULL,
-  `content` varchar(255) NOT NULL
+  `content` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -42,7 +44,9 @@ CREATE TABLE `tweets` (
   `id` int(11) NOT NULL,
   `created_at` date NOT NULL,
   `text` text NOT NULL,
-  `id_user` int(11) NOT NULL
+  `id_user` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
