@@ -1,5 +1,4 @@
 <?php
-	
 	function	myQuery($query)
 	{
 		global $link;
