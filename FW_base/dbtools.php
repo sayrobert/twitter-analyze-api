@@ -1,10 +1,10 @@
-<?php
+﻿<?php
 	function	myQuery($query)
 	{
 		global $link;
 
 		if (empty($link))
-			$link = mysqli_connect('localhost', 'root', '', 'cinema') or die (mysqli_connect_error());
+			$link = mysqli_connect('localhost', 'user_api', 'apitwitter', 'twittanalyze') or die (mysqli_connect_error());
 		$result = mysqli_query($link, $query) or die (mysqli_error($link));
 		return $result;
 	}
