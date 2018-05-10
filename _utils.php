@@ -57,8 +57,34 @@
 			}
 		}
 	}
-	function getCountTweetsByHashtagByUser(){
-		$query = "SELECT COUNT(*) FROM tweets WHERE";
+	function getHashtagsStar(){
+		$query = "SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 5";
+		// les 5 les plus commentés
+		$countHashtags = myFetchAllAssoc($query);
+		//var_dump($countHashtags);die;
+		$hashtagsStar = [];
+		foreach($countHashtags as $ligne){
+			$hashtagsStar[] = $ligne['content'];
+		}
+		return $hashtagsStar;
+	}
+	function getCountTweetsByHashtagByUser($username){
+		// on récupère les hashtags stars
+		$hashtagsStar = getHashtagsStar();
+		// nombredetweets by user on hashtag
+		$result = [];
+		foreach($hashtagsStar as $hashtag){
+			$req = "SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = '".$hashtag."' AND u.pseudo = '".$username."'";
+			$line = myFetchAssoc($req);
+			if($line['content'] == NULL){
+				$line['content'] = $hashtag;
+			}
+			if($line['pseudo'] == NULL){
+				$line['pseudo'] = $username;
+			}
+			$result[] = $line;
+		}
+		return $result;
 	}
 	
 	function purge(){

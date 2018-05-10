@@ -37,10 +37,10 @@ app.get('/user/:id', function (req, res) {
     });
 });
 
-app.get('/user/:id/tweet', function (req, res) { 
+app.get('/user/:id/tweets', function (req, res) { 
     let user_id = req.params.id;
 
-    sql_connect.query('SELECT * FROM user INNER JOIN tweets WHERE user.id = tweets.id_user AND user.id=?', user_id, function (error, results, fields) {
+    sql_connect.query('SELECT * FROM tweets INNER JOIN user ON tweets.id_user = user.id AND user.id=?', user_id, function (error, results, fields) {
         if (error) throw error;
         return res.send({ error: false, data: results, message: 'Get tweets of one user.' });
     });
