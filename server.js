@@ -46,6 +46,27 @@ app.get('/user/:id/tweets', function (req, res) {
     });
 });
 
+app.get('/popularhashtags', function (req, res) {
+    sql_connect.query('SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 5', function (error, results, fields) {
+        if (error) throw error;
+        return res.send({ error: false, data: results, message: 'Get 5 more popular hashtags.' });
+    });
+});
+
+app.get('/:hashtag/:pseudo', function (req, res) { 
+    let hashtag = req.params.hashtag;
+    let pseudo = req.params.pseudo;
+
+    sql_connect.query('SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = ? AND u.pseudo = ?', [hashtag, pseudo], function (error, results, fields) {
+        if (error) throw error;
+        return res.send({ error: false, data: results, message: 'Get count hashtag by person' });
+    });
+});
+
+app.on('error', function(err) {
+    console.log("[mysql error]",err);
+});
+
 app.all("*", function (req, res) {
     return res.status(404).send('page not found')
 });
