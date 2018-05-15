@@ -10,19 +10,14 @@
 	// on appel les fonctions utiles (connexion et traitements)
 	require_once("_utils.php");
 	 
-	//$twitteruser = "say__robert"; // twitterusername
-	//$notweets = 1; //nombre de tweets	
-	
-	// on fait les maj en bdd (les nouveaux inserts seulement pour chaque politique)
-	
+	// on fait les maj en bdd (les nouveaux inserts seulement pour chaque politique)	
 	initBdd("emmanuelmacron");
 	initBdd("ephilippepm");
 	initBdd("faureolivier");
 	initBdd("laurentwauquiez");
 	initBdd("jlmelenchon");
 	initBdd("mlp_officiel");
-	
-	
+
 	// on récupère les hashtags stars
 	$hashtagsStar = getHashtagsStar();
 
@@ -36,7 +31,6 @@
 	$nbTweetsWauquiez = getCountTweetsByHashtagByUser("laurentwauquiez");
 	$nbTweetsMelenchon	= getCountTweetsByHashtagByUser("jlmelenchon");
 	$nbTweetsLePen = getCountTweetsByHashtagByUser("mlp_officiel");
-	
 
 	var_dump($nbTweetsMacron);
 	var_dump($nbTweetsPhilippe);
@@ -46,6 +40,4 @@
 	var_dump($nbTweetsLePen);
 	
 	// on fait la purge de la base (on retire les anciens tweets et anciens hashtags)
-	purge();
-	
-?>
+	// purge();
