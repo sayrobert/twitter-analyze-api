@@ -77,7 +77,7 @@ function initBdd($username){
 }
 
 function getHashtagsStar(){
-	$query = "SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 5";
+	$query = "SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10";
 	
 	// les 5 les plus commentés
 	$countHashtags = myFetchAllAssoc($query);

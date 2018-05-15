@@ -47,7 +47,7 @@ app.get('/user/:id/tweets', function (req, res) {
 });
 
 app.get('/popularhashtags', function (req, res) {
-    sql_connect.query('SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 5', function (error, results, fields) {
+    sql_connect.query('SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10', function (error, results, fields) {
         if (error) throw error;
         return res.send({ error: false, data: results, message: 'Get 5 more popular hashtags.' });
     });
