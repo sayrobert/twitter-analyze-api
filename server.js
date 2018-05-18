@@ -14,11 +14,22 @@ const sql_connect = mysql.createConnection({
     password: 'root',
     database: 'twittanalyze'
 });
- 
+
 sql_connect.connect();
  
 app.get('/', function (req, res) {
-    return res.send({ error: true, message: 'hello' })
+
+    var hostname = req.protocol + '://' + req.get('host') + req.originalUrl;
+    
+    let results = {
+        "Affichage de toutes les personnalités politiques" : hostname + "users",
+        "Affichage des informations d’une personnalité politique" : hostname + "user/:id",
+        "Affichage des tweets pour une personnalité donnée" : hostname + "user/:id/tweets",
+        "Affichage des 10 tweets les plus utilisés par l’ensemble des personnalités politiques" : hostname + "popularhashtags",
+        "Affichage du nombre de fois où le hashtag populaire a été utilisé par la personnalité politique": hostname + ":hashtag/:pseudo"
+    };
+
+    return res.send({ data: results, message: 'Get all routes' })
 });
  
 app.get('/users', function (req, res) {
@@ -49,7 +60,7 @@ app.get('/user/:id/tweets', function (req, res) {
 app.get('/popularhashtags', function (req, res) {
     sql_connect.query('SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10', function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'Get 5 more popular hashtags.' });
+        return res.send({ error: false, data: results, message: 'Get 10 more popular hashtags.' });
     });
 });
 
@@ -64,13 +75,13 @@ app.get('/:hashtag/:pseudo', function (req, res) {
 });
 
 app.on('error', function(err) {
-    console.log("[mysql error]",err);
+    console.log("[mysql error]", err);
 });
 
 app.all("*", function (req, res) {
     return res.status(404).send('page not found')
 });
- 
+
 app.listen(8080, function () {
 	console.log('Node app is running on port 8080');
 });
