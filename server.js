@@ -25,8 +25,8 @@ app.get('/', function (req, res) {
         "Affichage de toutes les personnalités politiques" : hostname + "users",
         "Affichage des informations d’une personnalité politique" : hostname + "user/:id",
         "Affichage des tweets pour une personnalité donnée" : hostname + "user/:id/tweets",
-        "Affichage des 10 tweets les plus utilisés par l’ensemble des personnalités politiques" : hostname + "popularhashtags",
-        "Affichage du nombre de fois où le hashtag populaire a été utilisé par la personnalité politique": hostname + ":hashtag/:pseudo",
+        "Affichage des 10 tweets les plus utilisés dans le mois par l’ensemble des personnalités politiques" : hostname + "popularhashtags",
+        "Affichage du nombre de fois où le hashtag populaire a été utilisé ans le mois par une personnalité politique": hostname + ":hashtag/:pseudo",
         "Affichage du nombre de fois où le hashtag populaire avec tous les mois/années": hostname + "historytags",
         "Affichage du nombre de fois où le hashtag populaire par mois/année": hostname + "historytags/:month",
     };
