@@ -79,7 +79,7 @@ function initBdd($username){
 function getHashtagsStar(){
 	$query = "SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10";
 	
-	// les 5 les plus commentés
+	// les 10 les plus commentés
 	$countHashtags = myFetchAllAssoc($query);
 
 	$hashtagsStar = [];
@@ -90,6 +90,36 @@ function getHashtagsStar(){
 
 	return $hashtagsStar;
 }
+
+function insertHashtagsStar(){
+	$query = "SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10";
+	
+	// les 10 les plus commentés
+	$countHashtags = myFetchAllAssoc($query);
+
+	$hashtagsStar = [];
+
+	$date = date('mY');
+
+	foreach($countHashtags as $ligne){
+		$hashtagsStar[] = $ligne['content'];
+
+		$query = "SELECT * FROM hashtags_history WHERE hashtag_content='".$ligne['content']."'";
+		$numberHashtags = myQuery($query);
+	
+		if($numberHashtags->num_rows == 0){
+			$insert = "INSERT INTO hashtags_history (id, hashtag_content, month) VALUES( null,'".$ligne['content']."', '".$date."')";
+			myQuery($insert);
+		}
+	}
+}
+
+function getHashtagsStarByMonthYear($year_month){
+	$query = "SELECT hashtag_content FROM `hashtags_history` WHERE month = '".$year_month."'";
+
+	$monthHashtags = myFetchAllAssoc($query);
+}
+
 
 function getCountTweetsByHashtagByUser($username){
 	// on récupère les hashtags stars

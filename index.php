@@ -20,8 +20,9 @@
 
 	// on récupère les hashtags stars
 	$hashtagsStar = getHashtagsStar();
-
 	var_dump($hashtagsStar);
+
+	insertHashtagsStar();
 	
 	// on récupère le nombre de tweets sur chaque hashtag pour sélectionner les 5 les plus commentés
 	
@@ -31,6 +32,8 @@
 	$nbTweetsWauquiez = getCountTweetsByHashtagByUser("laurentwauquiez");
 	$nbTweetsMelenchon	= getCountTweetsByHashtagByUser("jlmelenchon");
 	$nbTweetsLePen = getCountTweetsByHashtagByUser("mlp_officiel");
+
+	getHashtagsStarByMonthYear('052018');
 
 	var_dump($nbTweetsMacron);
 	var_dump($nbTweetsPhilippe);

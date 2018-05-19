@@ -19,14 +19,16 @@ sql_connect.connect();
  
 app.get('/', function (req, res) {
 
-    var hostname = req.protocol + '://' + req.get('host') + req.originalUrl;
+    let hostname = req.protocol + '://' + req.get('host') + req.originalUrl;
     
     let results = {
         "Affichage de toutes les personnalités politiques" : hostname + "users",
         "Affichage des informations d’une personnalité politique" : hostname + "user/:id",
         "Affichage des tweets pour une personnalité donnée" : hostname + "user/:id/tweets",
         "Affichage des 10 tweets les plus utilisés par l’ensemble des personnalités politiques" : hostname + "popularhashtags",
-        "Affichage du nombre de fois où le hashtag populaire a été utilisé par la personnalité politique": hostname + ":hashtag/:pseudo"
+        "Affichage du nombre de fois où le hashtag populaire a été utilisé par la personnalité politique": hostname + ":hashtag/:pseudo",
+        "Affichage du nombre de fois où le hashtag populaire avec tous les mois/années": hostname + "historytags",
+        "Affichage du nombre de fois où le hashtag populaire par mois/année": hostname + "historytags/:month",
     };
 
     return res.send({ data: results, message: 'Get all routes' })
@@ -39,21 +41,25 @@ app.get('/users', function (req, res) {
     });
 });
  
-app.get('/user/:id', function (req, res) { 
+app.get('/user/:id', function (req, res) {
+    let hostname = req.protocol + '://' + req.get('host');
     let user_id = req.params.id;
+    let exemple_id = 1976143068;
 
     sql_connect.query('SELECT * FROM user where id=?', user_id, function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results[0], message: 'Get one user information.' });
+        return res.send({ error: false, data: results[0], message: 'Get one user information.', example: hostname + "/user/" + exemple_id });
     });
 });
 
-app.get('/user/:id/tweets', function (req, res) { 
+app.get('/user/:id/tweets', function (req, res) {
+    let hostname = req.protocol + '://' + req.get('host');
     let user_id = req.params.id;
+    let exemple_id = 1976143068;
 
     sql_connect.query('SELECT * FROM tweets INNER JOIN user ON tweets.id_user = user.id AND user.id=?', user_id, function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'Get tweets of one user.' });
+        return res.send({ error: false, data: results, message: 'Get tweets of one user.' , example: hostname + "/user/" + exemple_id + "/tweets/" });
     });
 });
 
@@ -64,13 +70,35 @@ app.get('/popularhashtags', function (req, res) {
     });
 });
 
-app.get('/:hashtag/:pseudo', function (req, res) { 
+app.get('/historytags', function (req, res) {
+    sql_connect.query('SELECT hashtag_content, month FROM hashtags_history', function (error, results, fields) {
+        if (error) throw error;
+        return res.send({ error: false, data: results, message: 'Get history hashtags.'});
+    });
+});
+
+app.get('/historytags/:month', function (req, res) {
+    let hostname = req.protocol + '://' + req.get('host');
+    let month_exemple = "052018";
+    let hashtag_month = req.params.month;
+
+    sql_connect.query('SELECT hashtag_content, month FROM hashtags_history WHERE month=?', hashtag_month, function (error, results, fields) {
+        if (error) throw error;
+        return res.send({ error: false, data: results, message: 'Get history tags.', example: hostname + "/historytags/" + month_exemple });
+    });
+});
+
+app.get('/:hashtag/:pseudo', function (req, res) {
+    let hostname = req.protocol + '://' + req.get('host');
     let hashtag = req.params.hashtag;
     let pseudo = req.params.pseudo;
 
+    let hashtag_exemple = "Karlspreis";
+    let pseudo_exemple = "emmanuelmacron"; 
+
     sql_connect.query('SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = ? AND u.pseudo = ?', [hashtag, pseudo], function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'Get count hashtag by person' });
+        return res.send({ error: false, data: results, message: 'Get count hashtag by person', example: hostname + "/" + hashtag_exemple + "/" + pseudo_exemple });
     });
 });
 
