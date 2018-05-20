@@ -14,3 +14,5 @@ node server.js
 ```
 
 Your app should now be running on [localhost:8080](http://localhost:8080/).
+
+You will see severals routes to navigate on the app.
