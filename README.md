@@ -14,4 +14,4 @@ node server.js
 ```
 You will see severals routes to navigate on the app.
 
-Your app should now be running on [localhost:5000](http://localhost:5000/).
+Your app should now be running on [localhost:8080](http://localhost:8080/).
