@@ -1,0 +1,10 @@
+html
+	head
+		title= 'Liste des tweets'
+		style
+			include style.css
+	body
+		h1= 'Liste des tweets'
+	table
+		for tweet in tweetList
+			p= tweet.text
