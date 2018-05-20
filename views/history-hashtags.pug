@@ -6,6 +6,10 @@ html
 	body
 		h1= 'Liste des hashtags populaires (historique)'
 	table
+		tr
+			td= '#'
+			td= 'Mois-année où il a été le plus utilisé'
+		
 		for hashtag in hashtagsList
 			tr
 				td= hashtag.content

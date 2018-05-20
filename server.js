@@ -60,31 +60,6 @@ app.get('/front/users', function (req, res) {
     });
 });
  
-app.get('/front/user/:id', function (req, res) {
-    let hostname = req.protocol + '://' + req.get('host');
-    let user_id = req.params.id;
-    let exemple_id = 1976143068;
-
-    sql_connect.query('SELECT * FROM user where id=?', user_id, function (error, results, fields) {
-       if (error) { throw error; }
-        else {
-            if(results.length==1) {
-                // Create the object to save the data.
-                var person = {
-                    'name':results[0].name,
-                    'pseudo':results[0].pseudo,
-                    'id':results[0].id
-                }
-                // render the details.plug page.
-                res.render('detail-user', {"person": person});
-            } else {
-                // render not found page
-                res.status(404).json({"status_code":404, "status_message": "Not found"});
-            }
-        }
-    });
-});
-
 app.get('/front/user/:id/tweets', function (req, res) {
 
     var tweetList = [];
@@ -120,7 +95,8 @@ app.get('/front/popularhashtags', function (req, res) {
 
                 // Create an object to save current row's data
                 var hashtag = {
-                    'content':results[i].content
+                    'content':results[i].content,
+                    'count':results[i].count
                 }
                 // Add object into array
                 hashtagsList.push(hashtag);
