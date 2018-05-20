@@ -12,8 +12,8 @@ app.set('view engine', 'pug');
  
 const sql_connect = mysql.createConnection({
     host: 'localhost',
-    user: 'user_api',
-    password: 'apitwitter',
+    user: 'root',
+    password: 'root',
     database: 'twittanalyze'
 });
 
@@ -31,6 +31,7 @@ app.get('/', function (req, res) {
         "Affichage du nombre de fois où le hashtag populaire a été utilisé ans le mois par une personnalité politique": hostname + ":hashtag/:pseudo",
         "Affichage du nombre de fois où le hashtag populaire avec tous les mois/années": hostname + "historytags",
         "Affichage du nombre de fois où le hashtag populaire par mois/année": hostname + "historytags/:month",
+        "Affichage du nuage de mots d'une personnalité politique": hostname + "wordcloud/:id",
     };
 
     return res.send({ data: results, message: 'Get all routes' })
@@ -56,6 +57,31 @@ app.get('/front/users', function (req, res) {
                 personList.push(person);
             }
             res.render('users', {"personList": personList});
+        }
+    });
+});
+
+app.get('/front/wordcloud/:id', function (req, res) {
+
+    var wordList = [];
+
+    let user_id = req.params.id;
+
+    sql_connect.query('SELECT * FROM wordcloud where id_user=?', user_id, function (error, results, fields) {
+        if (error) { throw error; }
+        else {
+            for (var i = 0; i < results.length; i++) {
+
+                // Create an object to save current row's data
+                var word = {
+                    'id_user':results[i].id_user,
+                    'word':results[i].word,
+                    'weight':results[i].weight
+                }
+                // Add object into array
+                wordList.push(word);
+            }
+            res.render('wordcloud', {"wordList": wordList});
         }
     });
 });
@@ -198,6 +224,17 @@ app.get('/user/:id', function (req, res) {
     sql_connect.query('SELECT * FROM user where id=?', user_id, function (error, results, fields) {
         if (error) throw error;
         return res.send({ error: false, data: results[0], message: 'Get one user information.', example: hostname + "/user/" + exemple_id });
+    });
+});
+
+app.get('/wordcloud/:id', function (req, res) {
+    let hostname = req.protocol + '://' + req.get('host');
+    let user_id = req.params.id;
+    let exemple_id = 1976143068;
+
+    sql_connect.query('SELECT * FROM wordcloud where id_user=?', user_id, function (error, results, fields) {
+        if (error) throw error;
+        return res.send({ error: false, data: results, message: 'Get word cloud of a user.', example: hostname + "/wordcloud/" + exemple_id });
     });
 });
 

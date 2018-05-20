@@ -1,0 +1,16 @@
+html
+	head
+		title= 'Liste des mots'
+		style
+			include style.css
+	body
+		h1= 'Liste des mots utilisés dans le mois'
+	
+	table
+		tr
+			td= 'Mot'
+			td= 'Poids'
+		for word in wordList
+			tr
+				td= word.word
+				td= word.weight
