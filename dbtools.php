@@ -5,6 +5,7 @@
 
 		if (empty($link))
 			$link = mysqli_connect('localhost', 'user_api', 'apitwitter', 'twittanalyze') or die (mysqli_connect_error());
+		mysqli_set_charset($link, "utf8");
 		$result = mysqli_query($link, $query) or die (mysqli_error($link));
 		return $result;
 	}
