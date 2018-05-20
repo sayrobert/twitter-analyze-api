@@ -143,7 +143,41 @@ function getCountTweetsByHashtagByUser($username){
 	
 	return $result;
 }
-
+function getWordCloud($id_user){
+	// on récupère tous les tweets d'un user
+	$query = "SELECT text FROM `tweets` WHERE id_user = ".$id_user;
+	// on met les tweets récupérés dans un tableau
+	$tweets = myFetchAllAssoc($query);
+	$result = [];
+	// on boucle sur les tweets
+	foreach($tweets as $tweet){
+		// on met dans un tableau chaque mot du tweet
+		$words = explode(" ", $tweet['text']);
+		// on enlève les caractères spéciaux inutiles pour l'analyse des mots
+		$words = str_replace(str_split('\\/:*?"<>|,.@#!'),"",$words);
+		// on retire les valeurs = ""
+		$words = array_filter($words);
+		// on met le resultat dans le tableau $result
+		$result[] = $words;
+	}
+	// on merge tous nos tableaux pour avoir qu'un seul tableau à une dimension
+	$arrayOneDimension = call_user_func_array('array_merge', $result);
+	// on récupère dans un tableau le nombre d'occurences pour chaque valeur du tableau de mots 
+	$wordCloud = array_count_values($arrayOneDimension);
+	// on enlève les doublons dans les valeurs
+	$wordCloud = array_unique($wordCloud);
+	
+	// on récupèrera les données bien formatées dans ce tableau
+	$myData = array(); 
+	// on boucle sur notre tableau de mots
+	foreach($wordCloud as $key => $word){
+		// on met dans $myData les mots avec leur nombre d'occurence (bien formaté)
+		array_push($myData, array("text" => $key, "weight" => $word));
+	}
+	//var_dump($myData);die;
+	// on retourne les mots bien formatés pour pouvoir construire le nuage de mots pour cet user
+	return $myData;
+}
 function purge(){
 	$lastMonth = date("m")-1;		
 	$dateOneMonthAgo = date("Y-".$lastMonth."-d");
