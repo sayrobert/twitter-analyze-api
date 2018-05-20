@@ -49,15 +49,15 @@
 	//pour olivier faure
 	$wordCloudForFaure = getWordCloud(213754264);
 	//pour laurent wauquiez
-	$wordCloudForWauquiez = getWordCloud(19438626);
+	//$wordCloudForWauquiez = getWordCloud(19438626);
 	// pour jean-luc mélenchon
-	$wordCloudForMelenchon = getWordCloud(80820758);
+	//$wordCloudForMelenchon = getWordCloud(80820758);
 	//pour marine le pen
-	$wordCloudForLePen = getWordCloud(217749896);
+	//$wordCloudForLePen = getWordCloud(217749896);
 	//pour edouard philippe
-	$wordCloudForPhilippe = getWordCloud(1110890216);
+	//$wordCloudForPhilippe = getWordCloud(1110890216);
 	// pour emmanuel macron
-	$wordCloudForMacron = getWordCloud(1976143068);
+	//$wordCloudForMacron = getWordCloud(1976143068);
 	
 	// on fait la purge de la base (on retire les anciens tweets et anciens hashtags)
 	// purge();

@@ -155,6 +155,8 @@ function getWordCloud($id_user){
 		$words = explode(" ", $tweet['text']);
 		// on enlève les caractères spéciaux inutiles pour l'analyse des mots
 		$words = str_replace(str_split('\\/:*?"<>|,.@#!'),"",$words);
+		// on remplace ' par \'
+		$words = str_replace("'","\'",$words);
 		// on retire les valeurs = ""
 		$words = array_filter($words);
 		// on met le resultat dans le tableau $result
@@ -168,12 +170,27 @@ function getWordCloud($id_user){
 	$wordCloud = array_unique($wordCloud);
 	
 	// on récupèrera les données bien formatées dans ce tableau
-	$myData = array(); 
+	$myData = array();
+	//var_dump($wordCloud);die;
 	// on boucle sur notre tableau de mots
 	foreach($wordCloud as $key => $word){
 		// on met dans $myData les mots avec leur nombre d'occurence (bien formaté)
 		array_push($myData, array("text" => $key, "weight" => $word));
+		// on vérifie si le mot existe en bdd
+		$req = "SELECT * FROM wordcloud WHERE word = '".$key."' AND id_user = ".$id_user;
+		$numberRows = myQuery($req);
+		// si le mot n'exite pas en bdd
+		if($numberRows->num_rows == 0){
+			$insert = "INSERT INTO wordcloud(id_user, word, weight) VALUES (".$id_user.",'".$key."',".$word.")";
+			// on insert en bdd
+			myQuery($insert);
+		}else{
+			$update = "UPDATE wordcloud SET weight=".$word." WHERE word = '".$key."' AND id_user = ".$id_user;
+			// on fait l'update en bdd
+			myQuery($update);
+		}
 	}
+	
 	//var_dump($myData);die;
 	// on retourne les mots bien formatés pour pouvoir construire le nuage de mots pour cet user
 	return $myData;
