@@ -74,8 +74,7 @@ app.get('/front/wordcloud/:id', function (req, res) {
 
                 // Create an object to save current row's data
                 var word = {
-                    'id_user':results[i].id_user,
-                    'word':results[i].word,
+                    'text':results[i].word,
                     'weight':results[i].weight
                 }
                 // Add object into array

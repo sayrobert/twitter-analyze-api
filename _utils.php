@@ -196,7 +196,7 @@ function getWordCloud($id_user){
 	return $myData;
 }
 function purge(){
-	$lastMonth = date("m")-1;		
+	$lastMonth = date("m")-1;
 	$dateOneMonthAgo = date("Y-".$lastMonth."-d");
 	
 	// delete tweets > 1 month
