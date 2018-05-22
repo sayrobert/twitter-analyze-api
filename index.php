@@ -50,7 +50,7 @@
 	$wordCloudForMacron = getWordCloud(1976143068);
 	
 	// on fait la purge de la base (on retire les anciens tweets et anciens hashtags)
-	// purge();
+	purge();
 ?>
 
 <!DOCTYPE html>

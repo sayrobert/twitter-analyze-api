@@ -200,10 +200,10 @@ function purge(){
 	$dateOneMonthAgo = date("Y-".$lastMonth."-d");
 	
 	// delete tweets > 1 month
-	$query = "DELETE * FROM tweets WHERE created_at < '".$dateOneMonthAgo."'";
+	$query = "DELETE FROM tweets WHERE created_at < '".$dateOneMonthAgo."'";
 	myQuery($query);
 	
 	// delete hashtags > 1 month
-	$query2 = "DELETE * FROM hashtags WHERE date_ajout < '".$dateOneMonthAgo."'";
+	$query2 = "DELETE FROM hashtags WHERE date_ajout < '".$dateOneMonthAgo."'";
 	myQuery($query2);
 }
