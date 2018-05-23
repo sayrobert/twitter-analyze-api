@@ -56,6 +56,7 @@ app.get('/front/users', function (req, res) {
                 // Add object into array
                 personList.push(person);
             }
+            res.header('Cache-Control', 'public, max-age=3600');
             res.render('users', {"personList": personList});
         }
     });
@@ -80,6 +81,7 @@ app.get('/front/wordcloud/:id', function (req, res) {
                 // Add object into array
                 wordList.push(word);
             }
+            res.header('Cache-Control', 'public, max-age=3600');
             res.render('wordcloud', {"wordList": wordList});
         }
     });
@@ -105,6 +107,7 @@ app.get('/front/user/:id/tweets', function (req, res) {
                 // Add object into array
                 tweetList.push(tweets);
             }
+            res.header('Cache-Control', 'public, max-age=3600');
             res.render('user-tweets', {"tweetList": tweetList});
         }
     });
@@ -126,6 +129,7 @@ app.get('/front/popularhashtags', function (req, res) {
                 // Add object into array
                 hashtagsList.push(hashtag);
             }
+            res.header('Cache-Control', 'public, max-age=3600');
             res.render('hashtags', {"hashtagsList": hashtagsList});
         }
     });
@@ -148,6 +152,7 @@ app.get('/front/historytags', function (req, res) {
                 // Add object into array
                 hashtagsList.push(hashtag);
             }
+            res.header('Cache-Control', 'public, max-age=3600');
             res.render('history-hashtags', {"hashtagsList": hashtagsList});
         }  
     });
@@ -174,6 +179,7 @@ app.get('/front/historytags/:month', function (req, res) {
                 // Add object into array
                 hashtagsList.push(hashtag);
             }
+            res.header('Cache-Control', 'public, max-age=3600');
             res.render('history-hashtags-month', {"hashtagsList": hashtagsList});
         }
     });
@@ -199,6 +205,7 @@ app.get('/front/:hashtag/:pseudo', function (req, res) {
                     'pseudo':results[0].pseudo
                 }
                 // render the details.plug page.
+                res.header('Cache-Control', 'public, max-age=3600');
                 res.render('hashtag-user', {"count": count});
             } else {
                 // render not found page
@@ -211,7 +218,8 @@ app.get('/front/:hashtag/:pseudo', function (req, res) {
 app.get('/users', function (req, res) {
     sql_connect.query('SELECT * FROM user', function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'Get all users.' });
+        res.header('Cache-Control', 'public, max-age=3600');
+        res.send({ error: false, data: results, message: 'Get all users.' });
     });
 });
  
@@ -222,7 +230,8 @@ app.get('/user/:id', function (req, res) {
 
     sql_connect.query('SELECT * FROM user where id=?', user_id, function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results[0], message: 'Get one user information.', example: hostname + "/user/" + exemple_id });
+        res.header('Cache-Control', 'public, max-age=3600');
+        res.send({ error: false, data: results[0], message: 'Get one user information.', example: hostname + "/user/" + exemple_id });
     });
 });
 
@@ -233,7 +242,8 @@ app.get('/wordcloud/:id', function (req, res) {
 
     sql_connect.query('SELECT * FROM wordcloud where id_user=?', user_id, function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'Get word cloud of a user.', example: hostname + "/wordcloud/" + exemple_id });
+        res.header('Cache-Control', 'public, max-age=3600');
+        res.send({ error: false, data: results, message: 'Get word cloud of a user.', example: hostname + "/wordcloud/" + exemple_id });
     });
 });
 
@@ -244,21 +254,24 @@ app.get('/user/:id/tweets', function (req, res) {
 
     sql_connect.query('SELECT * FROM tweets INNER JOIN user ON tweets.id_user = user.id AND user.id=?', user_id, function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'Get tweets of one user.' , example: hostname + "/user/" + exemple_id + "/tweets/" });
+        res.header('Cache-Control', 'public, max-age=3600');
+        res.send({ error: false, data: results, message: 'Get tweets of one user.' , example: hostname + "/user/" + exemple_id + "/tweets/" });
     });
 });
 
 app.get('/popularhashtags', function (req, res) {
     sql_connect.query('SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10', function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'Get 10 more popular hashtags.' });
+        res.header('Cache-Control', 'public, max-age=3600');
+        res.send({ error: false, data: results, message: 'Get 10 more popular hashtags.' });
     });
 });
 
 app.get('/historytags', function (req, res) {
     sql_connect.query('SELECT hashtag_content, month FROM hashtags_history', function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'Get history hashtags.'});
+        res.header('Cache-Control', 'public, max-age=3600');
+        res.send({ error: false, data: results, message: 'Get history hashtags.'});
     });
 });
 
@@ -269,7 +282,8 @@ app.get('/historytags/:month', function (req, res) {
 
     sql_connect.query('SELECT hashtag_content, month FROM hashtags_history WHERE month=?', hashtag_month, function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'Get history tags.', example: hostname + "/historytags/" + month_exemple });
+        res.header('Cache-Control', 'public, max-age=3600');
+        res.send({ error: false, data: results, message: 'Get history tags.', example: hostname + "/historytags/" + month_exemple });
     });
 });
 
@@ -283,7 +297,8 @@ app.get('/:hashtag/:pseudo', function (req, res) {
 
     sql_connect.query('SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = ? AND u.pseudo = ?', [hashtag, pseudo], function (error, results, fields) {
         if (error) throw error;
-        return res.send({ error: false, data: results, message: 'Get count hashtag by person', example: hostname + "/" + hashtag_exemple + "/" + pseudo_exemple });
+        res.header('Cache-Control', 'public, max-age=3600');
+        res.send({ error: false, data: results, message: 'Get count hashtag by person', example: hostname + "/" + hashtag_exemple + "/" + pseudo_exemple });
     });
 });
 
