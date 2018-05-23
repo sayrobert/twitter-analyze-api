@@ -1,6 +1,7 @@
 <?php	
 	// on indique qu'on traite du json 
 	// header('Content-type: application/json; charset=UTF-8');
+	// header("Cache-Control: max-age=3600,s-maxage=3600,no-cache,public,must-revalidate,proxy-revalidate");
 	// on démarre une session
 	session_start();
 	// appel du module api twitteroauth
@@ -11,18 +12,18 @@
 	require_once("_utils.php");
 	 
 	// on fait les maj en bdd (les nouveaux inserts seulement pour chaque politique)
-	
+	/*
 	initBdd("emmanuelmacron");
 	initBdd("ephilippepm");
 	initBdd("faureolivier");
 	initBdd("laurentwauquiez");
 	initBdd("jlmelenchon");
 	initBdd("mlp_officiel");
-	
+	*/
 	
 	// on récupère les hashtags stars
 	$hashtagsStar = getHashtagsStar();
-	insertHashtagsStar();
+	//insertHashtagsStar();
 	
 	// on récupère le nombre de tweets sur chaque hashtag pour sélectionner les 5 les plus commentés
 	$nbTweetsMacron = getCountTweetsByHashtagByUser("emmanuelmacron");
@@ -39,24 +40,25 @@
 	//pour olivier faure
 	$wordCloudForFaure = getWordCloud(213754264);
 	//pour laurent wauquiez
-	$wordCloudForWauquiez = getWordCloud(19438626);
+	//$wordCloudForWauquiez = getWordCloud(19438626);
 	// pour jean-luc mélenchon
-	$wordCloudForMelenchon = getWordCloud(80820758);
+	//$wordCloudForMelenchon = getWordCloud(80820758);
 	//pour marine le pen
-	$wordCloudForLePen = getWordCloud(217749896);
+	//$wordCloudForLePen = getWordCloud(217749896);
 	//pour edouard philippe
-	$wordCloudForPhilippe = getWordCloud(1110890216);
+	//$wordCloudForPhilippe = getWordCloud(1110890216);
 	// pour emmanuel macron
-	$wordCloudForMacron = getWordCloud(1976143068);
+	//$wordCloudForMacron = getWordCloud(1976143068);
 	
 	// on fait la purge de la base (on retire les anciens tweets et anciens hashtags)
-	purge();
+	//purge();
 ?>
 
 <!DOCTYPE html>
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="cahce-control" content="max-age=3600,s-maxage=3600,no-cache,public,must-revalidate,proxy-revalidate" />
 	</head>
 	<body>		
 		<div id="wordCloud"></div>
