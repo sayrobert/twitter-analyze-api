@@ -13,8 +13,8 @@ app.set('view engine', 'pug');
  
 const sql_connect = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: 'root',
+    user: 'user_api',
+    password: 'apitwitter',
     database: 'twittanalyze'
 });
 

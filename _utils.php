@@ -143,31 +143,70 @@ function getCountTweetsByHashtagByUser($username){
 	
 	return $result;
 }
+
+function formatWords($tweet){
+	// on met dans un tableau chaque mot du tweet
+	$words = explode(" ", $tweet);
+	
+	// on retire les guillemets
+	$words = str_replace('"',"",$words);
+	// on enlève les caractères spéciaux inutiles pour l'analyse des mots
+	$words = str_replace(str_split('\\/:*?"<>|,.@#!'),"",$words);
+	$words = str_replace('«',"",$words);
+	//$words = str_replace("...","",$words);
+	$words = str_replace('»',"",$words);	
+	// on remplace ' par \'
+	//$words = str_replace("'","\'",$words);
+	
+	$prepos = array(
+	
+		"Par", "Pour", "En", "Vers", "Avec", "De", "Sans", "Sous", "Sur", "Nous", "Que", "La", "Le", "Et",
+		"Les", "Ils", "Il", "Elle", "Vous", "Tu", "Je", "Un", "Une", "A", "Cette", "Ce", "Ces", "Si", "Ci", "Ca",
+		"Au", "Qui", "Quoi", "Comment", "Ou", "Quand", "Pourquoi", "Pas", "Ne", "Plus", "Dans", "Des",
+		"Celle", "Celles", "Ceux", "Est", "Du", "C'est", "Meme", "Notre", "Nos", "Votre", "Vos"
+	
+	);
+	$preposLower = array_map('strtolower', $prepos);
+	
+	foreach($words as $key => $word){
+		
+		$word = str_replace(' ', '', $word);
+		$word = trim($word);
+		if(in_array($word, $prepos) || in_array($word, $preposLower)){
+			unset($words[$key]);
+		}
+		if(substr($word, 0, 5) == 'https'){
+			unset($words[$key]);
+		}
+	}
+	
+	//var_dump($words);die;
+	return $words;
+}
 function getWordCloud($id_user){
 	// on récupère tous les tweets d'un user
 	$query = "SELECT text FROM `tweets` WHERE id_user = ".$id_user;
 	// on met les tweets récupérés dans un tableau
 	$tweets = myFetchAllAssoc($query);
 	$result = [];
+	
 	// on boucle sur les tweets
 	foreach($tweets as $tweet){
-		// on met dans un tableau chaque mot du tweet
-		$words = explode(" ", $tweet['text']);
-		// on enlève les caractères spéciaux inutiles pour l'analyse des mots
-		$words = str_replace(str_split('\\/:*?"<>|,.@#!'),"",$words);
-		// on remplace ' par \'
-		$words = str_replace("'","\'",$words);
+		
+		
+		$words = formatWords($tweet['text']);		
 		// on retire les valeurs = ""
 		$words = array_filter($words);
 		// on met le resultat dans le tableau $result
 		$result[] = $words;
 	}
+	//var_dump($result);die;
 	// on merge tous nos tableaux pour avoir qu'un seul tableau à une dimension
 	$arrayOneDimension = call_user_func_array('array_merge', $result);
 	// on récupère dans un tableau le nombre d'occurences pour chaque valeur du tableau de mots 
 	$wordCloud = array_count_values($arrayOneDimension);
 	// on enlève les doublons dans les valeurs
-	$wordCloud = array_unique($wordCloud);
+	//$wordCloud = array_unique($wordCloud);
 	
 	// on récupèrera les données bien formatées dans ce tableau
 	$myData = array();
@@ -177,15 +216,15 @@ function getWordCloud($id_user){
 		// on met dans $myData les mots avec leur nombre d'occurence (bien formaté)
 		array_push($myData, array("text" => $key, "weight" => $word));
 		// on vérifie si le mot existe en bdd
-		$req = "SELECT * FROM wordcloud WHERE word = '".$key."' AND id_user = ".$id_user;
+		$req = 'SELECT * FROM wordcloud WHERE word = "'.$key.'" AND id_user = '.$id_user;
 		$numberRows = myQuery($req);
 		// si le mot n'exite pas en bdd
 		if($numberRows->num_rows == 0){
-			$insert = "INSERT INTO wordcloud(id_user, word, weight) VALUES (".$id_user.",'".$key."',".$word.")";
+			$insert = 'INSERT INTO wordcloud(id_user, word, weight) VALUES ('.$id_user.',"'.$key.'",'.$word.')';
 			// on insert en bdd
 			myQuery($insert);
 		}else{
-			$update = "UPDATE wordcloud SET weight=".$word." WHERE word = '".$key."' AND id_user = ".$id_user;
+			$update = 'UPDATE wordcloud SET weight='.$word.' WHERE word = "'.$key.'" AND id_user = '.$id_user;
 			// on fait l'update en bdd
 			myQuery($update);
 		}
