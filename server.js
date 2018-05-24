@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
+const Sequelize = require('sequelize');
  
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -18,11 +19,69 @@ const sql_connect = mysql.createConnection({
 });
 
 sql_connect.connect();
- 
+
+const sequelize = new Sequelize('twittanalyze', 'root', 'root', {
+  host: 'localhost',
+  dialect: 'mysql',
+  operatorsAliases: false,
+  define: {
+    timestamps: false,
+    freezeTableName: true
+  },
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
+  },
+});
+
+const User = sequelize.define('user', {
+  name: {
+    type: Sequelize.STRING
+  },
+  pseudo: {
+    type: Sequelize.STRING
+  },
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true
+
+  }
+});
+
+const Wordcloud = sequelize.define('wordcloud', {
+  weight: {
+    type: Sequelize.STRING
+  },
+  word: {
+    type: Sequelize.STRING
+  },
+  id_user: {
+    type: Sequelize.INTEGER,
+    primaryKey: true
+
+  }
+});
+
+const HistoryTags = sequelize.define('hashtags_history', {
+  month: {
+    type: Sequelize.STRING
+  },
+  hashtag_content: {
+    type: Sequelize.STRING
+  },
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true
+
+  }
+});
+
+// All routes
 app.get('/', function (req, res) {
 
     let hostname = req.protocol + '://' + req.get('host') + req.originalUrl;
-    
     let results = {
         "Affichage de toutes les personnalités politiques" : hostname + "users",
         "Affichage des informations d’une personnalité politique" : hostname + "user/:id",
@@ -36,61 +95,54 @@ app.get('/', function (req, res) {
 
     return res.send({ data: results, message: 'Get all routes' })
 });
- 
 
+// Get all users
 app.get('/front/users', function (req, res) {
-
     var personList = [];
 
-    sql_connect.query('SELECT * FROM user', function (error, results, fields) {
-        if (error) { throw error; }
-        else {
-            for (var i = 0; i < results.length; i++) {
+    User.findAll().then(function(results) {
+        for (var i = 0; i < results.length; i++) {
 
-                // Create an object to save current row's data
-                var person = {
-                    'name':results[i].name,
-                    'pseudo':results[i].pseudo,
-                    'id':results[i].id
-                }
-                // Add object into array
-                personList.push(person);
+            var person = {
+                'name':results[i].name,
+                'pseudo':results[i].pseudo,
+                'id':results[i].id
             }
-            res.header('Cache-Control', 'public, max-age=3600');
-            res.render('users', {"personList": personList});
+
+            personList.push(person);
         }
+        res.header('Cache-Control', 'public, max-age=3600');
+        res.render('users', {"personList": personList});
     });
 });
 
+// Get wordcloud of one user
 app.get('/front/wordcloud/:id', function (req, res) {
 
     var wordList = [];
-
     let user_id = req.params.id;
 
-    sql_connect.query('SELECT * FROM wordcloud where id_user=?', user_id, function (error, results, fields) {
-        if (error) { throw error; }
-        else {
+    if (user_id != ':id') {
+        Wordcloud.findAll({ where: { id_user: user_id } }).then(function(results) {
             for (var i = 0; i < results.length; i++) {
 
-                // Create an object to save current row's data
                 var word = {
                     'text':results[i].word,
                     'weight':results[i].weight
                 }
-                // Add object into array
+
                 wordList.push(word);
             }
             res.header('Cache-Control', 'public, max-age=3600');
             res.render('wordcloud', {"wordList": wordList});
-        }
-    });
+        });
+    }
 });
- 
+
+// Get user tweets
 app.get('/front/user/:id/tweets', function (req, res) {
 
     var tweetList = [];
-
     let hostname = req.protocol + '://' + req.get('host');
     let user_id = req.params.id;
     let exemple_id = 1976143068;
@@ -113,9 +165,11 @@ app.get('/front/user/:id/tweets', function (req, res) {
     });
 });
 
+// Get popular hashtags of the month
 app.get('/front/popularhashtags', function (req, res) {
 
     var hashtagsList = [];
+    
     sql_connect.query('SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10', function (error, results, fields) {
         if (error) { throw error; }
         else {
@@ -135,29 +189,28 @@ app.get('/front/popularhashtags', function (req, res) {
     });
 });
 
+// Get all history hashtags
 app.get('/front/historytags', function (req, res) {
 
     var hashtagsList = [];
 
-    sql_connect.query('SELECT hashtag_content, month FROM hashtags_history', function (error, results, fields) {
-        if (error) { throw error; }
-        else {
-            for (var i = 0; i < results.length; i++) {
+    HistoryTags.findAll().then(function(results) {
+        for (var i = 0; i < results.length; i++) {
 
-                // Create an object to save current row's data
-                var hashtag = {
-                    'content':results[i].hashtag_content,
-                    'month':results[i].month
-                }
-                // Add object into array
-                hashtagsList.push(hashtag);
+            // Create an object to save current row's data
+            var hashtag = {
+                'content':results[i].hashtag_content,
+                'month':results[i].month
             }
-            res.header('Cache-Control', 'public, max-age=3600');
-            res.render('history-hashtags', {"hashtagsList": hashtagsList});
-        }  
+            // Add object into array
+            hashtagsList.push(hashtag);
+        }
+        res.header('Cache-Control', 'public, max-age=3600');
+        res.render('history-hashtags', {"hashtagsList": hashtagsList});
     });
 });
 
+// Get history hashtags per month
 app.get('/front/historytags/:month', function (req, res) {
 
     var hashtagsList = [];
@@ -166,9 +219,8 @@ app.get('/front/historytags/:month', function (req, res) {
     let month_exemple = "052018";
     let hashtag_month = req.params.month;
 
-    sql_connect.query('SELECT hashtag_content, month FROM hashtags_history WHERE month=?', hashtag_month, function (error, results, fields) {
-        if (error) { throw error; }
-        else {
+    if (hashtag_month != ':month') {
+        HistoryTags.findAll({ where: { month: hashtag_month } }).then(function(results) {
             for (var i = 0; i < results.length; i++) {
 
                 // Create an object to save current row's data
@@ -181,10 +233,11 @@ app.get('/front/historytags/:month', function (req, res) {
             }
             res.header('Cache-Control', 'public, max-age=3600');
             res.render('history-hashtags-month', {"hashtagsList": hashtagsList});
-        }
-    });
+        });
+    }
 });
 
+// Get count of using one hashtag by user
 app.get('/front/:hashtag/:pseudo', function (req, res) {
 
     let hostname = req.protocol + '://' + req.get('host');
@@ -215,38 +268,50 @@ app.get('/front/:hashtag/:pseudo', function (req, res) {
     });
 });
 
+// Get all users
 app.get('/users', function (req, res) {
-    sql_connect.query('SELECT * FROM user', function (error, results, fields) {
-        if (error) throw error;
+    User.findAll().then(function(results) 
+    {
         res.header('Cache-Control', 'public, max-age=3600');
         res.send({ error: false, data: results, message: 'Get all users.' });
     });
 });
  
+// Get one user information
 app.get('/user/:id', function (req, res) {
     let hostname = req.protocol + '://' + req.get('host');
     let user_id = req.params.id;
     let exemple_id = 1976143068;
 
-    sql_connect.query('SELECT * FROM user where id=?', user_id, function (error, results, fields) {
-        if (error) throw error;
-        res.header('Cache-Control', 'public, max-age=3600');
-        res.send({ error: false, data: results[0], message: 'Get one user information.', example: hostname + "/user/" + exemple_id });
-    });
+    if (user_id != ':id') {
+        User.findById(user_id).then(function(results) {
+            res.header('Cache-Control', 'public, max-age=3600');
+            res.send({ data: results, message: 'Get one user information.', example: hostname + "/user/" + exemple_id });
+        });
+    }
+    else {
+        res.send({ message: 'Get one user information.', example: hostname + "/user/" + exemple_id });
+    }
 });
 
+// Get wordcloud of one user
 app.get('/wordcloud/:id', function (req, res) {
     let hostname = req.protocol + '://' + req.get('host');
     let user_id = req.params.id;
     let exemple_id = 1976143068;
 
-    sql_connect.query('SELECT * FROM wordcloud where id_user=?', user_id, function (error, results, fields) {
-        if (error) throw error;
-        res.header('Cache-Control', 'public, max-age=3600');
-        res.send({ error: false, data: results, message: 'Get word cloud of a user.', example: hostname + "/wordcloud/" + exemple_id });
-    });
+    if (user_id != ':id') {
+        Wordcloud.findAll({ where: { id_user: user_id } }).then(function(results) {
+            res.header('Cache-Control', 'public, max-age=3600');
+            res.send({ data: results, message: 'Get word cloud of a user.', example: hostname + "/wordcloud/" + exemple_id });
+        });
+    }
+    else {
+        res.send({ message: 'Get word cloud of one user.', example: hostname + "/wordcloud/" + exemple_id });
+    }
 });
 
+// Get user tweets
 app.get('/user/:id/tweets', function (req, res) {
     let hostname = req.protocol + '://' + req.get('host');
     let user_id = req.params.id;
@@ -259,6 +324,7 @@ app.get('/user/:id/tweets', function (req, res) {
     });
 });
 
+// Get popular hashtags of the month
 app.get('/popularhashtags', function (req, res) {
     sql_connect.query('SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10', function (error, results, fields) {
         if (error) throw error;
@@ -267,26 +333,32 @@ app.get('/popularhashtags', function (req, res) {
     });
 });
 
+// Get all history hashtags
 app.get('/historytags', function (req, res) {
-    sql_connect.query('SELECT hashtag_content, month FROM hashtags_history', function (error, results, fields) {
-        if (error) throw error;
+    HistoryTags.findAll().then(function(results) {
         res.header('Cache-Control', 'public, max-age=3600');
-        res.send({ error: false, data: results, message: 'Get history hashtags.'});
+        res.send({ data: results, message: 'Get history hashtags.'});
     });
 });
 
+// Get history hashtags per month
 app.get('/historytags/:month', function (req, res) {
     let hostname = req.protocol + '://' + req.get('host');
     let month_exemple = "052018";
     let hashtag_month = req.params.month;
 
-    sql_connect.query('SELECT hashtag_content, month FROM hashtags_history WHERE month=?', hashtag_month, function (error, results, fields) {
-        if (error) throw error;
-        res.header('Cache-Control', 'public, max-age=3600');
-        res.send({ error: false, data: results, message: 'Get history tags.', example: hostname + "/historytags/" + month_exemple });
-    });
+    if (hashtag_month != ':month') {
+        HistoryTags.findAll({ where: { month: hashtag_month } }).then(function(results) {
+            res.header('Cache-Control', 'public, max-age=3600');
+            res.send({ data: results, message: 'Get history tags.', example: hostname + "/historytags/" + month_exemple });
+        });
+    }
+    else {
+        res.send({ message: 'Get history tags.', example: hostname + "/historytags/" + month_exemple })
+    }
 });
 
+// Get count of using one hashtag by user
 app.get('/:hashtag/:pseudo', function (req, res) {
     let hostname = req.protocol + '://' + req.get('host');
     let hashtag = req.params.hashtag;
@@ -307,7 +379,7 @@ app.on('error', function(err) {
 });
 
 app.all("*", function (req, res) {
-    return res.status(404).send('page not found')
+    return res.status(404).send('Page not found')
 });
 
 app.listen(8080, function () {
