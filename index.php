@@ -12,14 +12,13 @@
 	require_once("_utils.php");
 	 
 	// on fait les maj en bdd (les nouveaux inserts seulement pour chaque politique)
-	/*
+	
 	initBdd("emmanuelmacron");
 	initBdd("ephilippepm");
 	initBdd("faureolivier");
 	initBdd("laurentwauquiez");
 	initBdd("jlmelenchon");
 	initBdd("mlp_officiel");
-	*/
 	
 	// on récupère les hashtags stars
 	$hashtagsStar = getHashtagsStar();
@@ -38,7 +37,7 @@
 		
 	// nuage de mots 
 	//pour olivier faure
-	$wordCloudForFaure = getWordCloud(213754264);
+	//$wordCloudForFaure = getWordCloud(213754264);
 	//pour laurent wauquiez
 	//$wordCloudForWauquiez = getWordCloud(19438626);
 	// pour jean-luc mélenchon
