@@ -13,8 +13,8 @@ app.set('view engine', 'pug');
  
 const sql_connect = mysql.createConnection({
     host: 'localhost',
-    user: 'user_api',
-    password: 'apitwitter',
+    user: 'root',
+    password: 'root',
     database: 'twittanalyze'
 });
 
@@ -42,6 +42,26 @@ const User = sequelize.define('user', {
   },
   pseudo: {
     type: Sequelize.STRING
+  },
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true
+
+  }
+});
+
+const Tweet = sequelize.define('tweets', {
+  id_user: {
+    type: Sequelize.INTEGER
+  },
+  text: {
+    type: Sequelize.TEXT
+  },
+  created_at: {
+    type: Sequelize.DATE
+  },
+  date_ajout: {
+    type: Sequelize.DATE
   },
   id: {
     type: Sequelize.INTEGER,
@@ -139,6 +159,8 @@ app.get('/front/wordcloud/:id', function (req, res) {
     }
 });
 
+Tweet.belongsTo(User, {foreignKey: 'id_user'})
+
 // Get user tweets
 app.get('/front/user/:id/tweets', function (req, res) {
 
@@ -147,9 +169,8 @@ app.get('/front/user/:id/tweets', function (req, res) {
     let user_id = req.params.id;
     let exemple_id = 1976143068;
 
-    sql_connect.query('SELECT * FROM tweets INNER JOIN user ON tweets.id_user = user.id AND user.id=?', user_id, function (error, results, fields) {
-        if (error) { throw error; }
-        else {
+    if (user_id != ':id') {
+        Tweet.findAll({ where: { id_user: user_id } }).then(function(results) {
             for (var i = 0; i < results.length; i++) {
 
                 // Create an object to save current row's data
@@ -161,8 +182,8 @@ app.get('/front/user/:id/tweets', function (req, res) {
             }
             res.header('Cache-Control', 'public, max-age=3600');
             res.render('user-tweets', {"tweetList": tweetList});
-        }
-    });
+        });
+    }
 });
 
 // Get popular hashtags of the month
@@ -317,11 +338,15 @@ app.get('/user/:id/tweets', function (req, res) {
     let user_id = req.params.id;
     let exemple_id = 1976143068;
 
-    sql_connect.query('SELECT * FROM tweets INNER JOIN user ON tweets.id_user = user.id AND user.id=?', user_id, function (error, results, fields) {
-        if (error) throw error;
-        res.header('Cache-Control', 'public, max-age=3600');
-        res.send({ error: false, data: results, message: 'Get tweets of one user.' , example: hostname + "/user/" + exemple_id + "/tweets/" });
-    });
+    if (user_id != ':id') {
+        Tweet.findAll({ where: { id_user: user_id } }).then(function(results) {        
+            res.header('Cache-Control', 'public, max-age=3600');
+            res.send({ data: results, message: 'Get tweets of one user.' , example: hostname + "/user/" + exemple_id + "/tweets/" });
+        });
+    }
+    else {
+        res.send({ message: 'Get tweets of one user.' , example: hostname + "/user/" + exemple_id + "/tweets/" });
+    }
 });
 
 // Get popular hashtags of the month
