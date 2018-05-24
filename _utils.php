@@ -163,16 +163,20 @@ function formatWords($tweet){
 		"Par", "Pour", "En", "Vers", "Avec", "De", "Sans", "Sous", "Sur", "Nous", "Que", "La", "Le", "Et",
 		"Les", "Ils", "Il", "Elle", "Vous", "Tu", "Je", "Un", "Une", "A", "Cette", "Ce", "Ces", "Si", "Ci", "Ca",
 		"Au", "Qui", "Quoi", "Comment", "Ou", "Quand", "Pourquoi", "Pas", "Ne", "Plus", "Dans", "Des",
-		"Celle", "Celles", "Ceux", "Est", "Du", "C'est", "Meme", "Notre", "Nos", "Votre", "Vos"
+		"Celle", "Celles", "Ceux", "Est", "Du", "C'est", "Meme", "Notre", "Nos", "Votre", "Vos", "Ton", "Ta",
+		"Tes", "Te", "Son", "Sa", "Ses", "Mon", "Ma", "Mes", "Me"
 	
 	);
 	$preposLower = array_map('strtolower', $prepos);
+	$preposUpper = array_map('strtoupper', $prepos);
+	array_push($preposLower, "même", "là", "à", "où");
+	array_push($preposUpper, "MÊME", "LÀ", "À", "OÙ");
 	
 	foreach($words as $key => $word){
 		
 		$word = str_replace(' ', '', $word);
 		$word = trim($word);
-		if(in_array($word, $prepos) || in_array($word, $preposLower)){
+		if(in_array($word, $prepos) || in_array($word, $preposLower) || in_array($word, $preposUpper)){
 			unset($words[$key]);
 		}
 		if(substr($word, 0, 5) == 'https'){
@@ -192,8 +196,6 @@ function getWordCloud($id_user){
 	
 	// on boucle sur les tweets
 	foreach($tweets as $tweet){
-		
-		
 		$words = formatWords($tweet['text']);		
 		// on retire les valeurs = ""
 		$words = array_filter($words);
