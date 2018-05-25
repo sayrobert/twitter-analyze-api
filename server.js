@@ -268,25 +268,28 @@ app.get('/front/:hashtag/:pseudo', function (req, res) {
     let hashtag_exemple = "Karlspreis";
     let pseudo_exemple = "emmanuelmacron"; 
 
-    sql_connect.query('SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = ? AND u.pseudo = ?', [hashtag, pseudo], function (error, results, fields) {
-        if (error) { throw error; }
-        else {
-            if(results.length==1) {
-                // Create the object to save the data.
-                var count = {
-                    'count':results[0].nombredetweets,
-                    'content':results[0].content,
-                    'pseudo':results[0].pseudo
+    if (hashtag != ':hashtag' && pseudo != ':pseudo')
+    {
+        sql_connect.query('SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = ? AND u.pseudo = ?', [hashtag, pseudo], function (error, results, fields) {
+            if (error) { throw error; }
+            else {
+                if(results.length==1) {
+                    // Create the object to save the data.
+                    var count = {
+                        'count':results[0].nombredetweets,
+                        'content':results[0].content,
+                        'pseudo':results[0].pseudo
+                    }
+                    // render the details.plug page.
+                    res.header('Cache-Control', 'public, max-age=3600');
+                    res.render('hashtag-user', {"count": count});
+                } else {
+                    // render not found page
+                    res.status(404).json({"status_code":404, "status_message": "Not found"});
                 }
-                // render the details.plug page.
-                res.header('Cache-Control', 'public, max-age=3600');
-                res.render('hashtag-user', {"count": count});
-            } else {
-                // render not found page
-                res.status(404).json({"status_code":404, "status_message": "Not found"});
             }
-        }
-    });
+        });
+    }
 });
 
 // Get all users
@@ -307,11 +310,11 @@ app.get('/user/:id', function (req, res) {
     if (user_id != ':id') {
         User.findById(user_id).then(function(results) {
             res.header('Cache-Control', 'public, max-age=3600');
-            res.send({ data: results, message: 'Get one user information.', example: hostname + "/user/" + exemple_id });
+            res.send({ error: false, data: results, message: 'Get one user information.', example: hostname + "/user/" + exemple_id });
         });
     }
     else {
-        res.send({ message: 'Get one user information.', example: hostname + "/user/" + exemple_id });
+        res.send({ error: true, message: 'Get one user information.', example: hostname + "/user/" + exemple_id });
     }
 });
 
@@ -324,11 +327,11 @@ app.get('/wordcloud/:id', function (req, res) {
     if (user_id != ':id') {
         Wordcloud.findAll({ where: { id_user: user_id } }).then(function(results) {
             res.header('Cache-Control', 'public, max-age=3600');
-            res.send({ data: results, message: 'Get word cloud of a user.', example: hostname + "/wordcloud/" + exemple_id });
+            res.send({ error: false, data: results, message: 'Get word cloud of a user.', example: hostname + "/wordcloud/" + exemple_id });
         });
     }
     else {
-        res.send({ message: 'Get word cloud of one user.', example: hostname + "/wordcloud/" + exemple_id });
+        res.send({ error: true, message: 'Get word cloud of one user.', example: hostname + "/wordcloud/" + exemple_id });
     }
 });
 
@@ -341,11 +344,11 @@ app.get('/user/:id/tweets', function (req, res) {
     if (user_id != ':id') {
         Tweet.findAll({ where: { id_user: user_id } }).then(function(results) {        
             res.header('Cache-Control', 'public, max-age=3600');
-            res.send({ data: results, message: 'Get tweets of one user.' , example: hostname + "/user/" + exemple_id + "/tweets/" });
+            res.send({ error: false, data: results, message: 'Get tweets of one user.' , example: hostname + "/user/" + exemple_id + "/tweets/" });
         });
     }
     else {
-        res.send({ message: 'Get tweets of one user.' , example: hostname + "/user/" + exemple_id + "/tweets/" });
+        res.send({ error: true, message: 'Get tweets of one user.' , example: hostname + "/user/" + exemple_id + "/tweets/" });
     }
 });
 
@@ -362,7 +365,7 @@ app.get('/popularhashtags', function (req, res) {
 app.get('/historytags', function (req, res) {
     HistoryTags.findAll().then(function(results) {
         res.header('Cache-Control', 'public, max-age=3600');
-        res.send({ data: results, message: 'Get history hashtags.'});
+        res.send({ error: false, data: results, message: 'Get history hashtags.'});
     });
 });
 
@@ -375,11 +378,11 @@ app.get('/historytags/:month', function (req, res) {
     if (hashtag_month != ':month') {
         HistoryTags.findAll({ where: { month: hashtag_month } }).then(function(results) {
             res.header('Cache-Control', 'public, max-age=3600');
-            res.send({ data: results, message: 'Get history tags.', example: hostname + "/historytags/" + month_exemple });
+            res.send({ error: false, data: results, message: 'Get history tags.', example: hostname + "/historytags/" + month_exemple });
         });
     }
     else {
-        res.send({ message: 'Get history tags.', example: hostname + "/historytags/" + month_exemple })
+        res.send({ error: true, message: 'Get history tags.', example: hostname + "/historytags/" + month_exemple })
     }
 });
 
@@ -392,11 +395,17 @@ app.get('/:hashtag/:pseudo', function (req, res) {
     let hashtag_exemple = "Karlspreis";
     let pseudo_exemple = "emmanuelmacron"; 
 
-    sql_connect.query('SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = ? AND u.pseudo = ?', [hashtag, pseudo], function (error, results, fields) {
-        if (error) throw error;
-        res.header('Cache-Control', 'public, max-age=3600');
-        res.send({ error: false, data: results, message: 'Get count hashtag by person', example: hostname + "/" + hashtag_exemple + "/" + pseudo_exemple });
-    });
+    if (hashtag != ':hashtag' && pseudo != ':pseudo')
+    {
+        sql_connect.query('SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = ? AND u.pseudo = ?', [hashtag, pseudo], function (error, results, fields) {
+            if (error) throw error;
+            res.header('Cache-Control', 'public, max-age=3600');
+            res.send({ error: false, data: results, message: 'Get count hashtag by person', example: hostname + "/" + hashtag_exemple + "/" + pseudo_exemple });
+        });
+    }
+    else {
+        res.send({ error: true, message: 'Get count hashtag by person', example: hostname + "/" + hashtag_exemple + "/" + pseudo_exemple });
+    }
 });
 
 app.on('error', function(err) {
