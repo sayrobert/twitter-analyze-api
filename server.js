@@ -416,6 +416,6 @@ app.all("*", function (req, res) {
     return res.status(404).send('Page not found')
 });
 
-app.listen(8080, function () {
+app.listen(process.env.PORT || 5000, function () {
 	console.log('Node app is running on port 8080');
 });
