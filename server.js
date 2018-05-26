@@ -13,8 +13,8 @@ app.set('view engine', 'pug');
  
 const sql_connect = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: 'root',
+    user: 'user_api',
+    password: 'apitwitter',
     database: 'twittanalyze'
 });
 
@@ -416,6 +416,6 @@ app.all("*", function (req, res) {
     return res.status(404).send('Page not found')
 });
 
-app.listen(8080, function () {
+app.listen(8080	, function () {
 	console.log('Node app is running on port 8080');
 });
