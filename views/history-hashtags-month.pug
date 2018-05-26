@@ -1,0 +1,12 @@
+html
+	head
+		title= 'Liste des tweets'
+		style
+			include style.css
+	body
+		h1= 'Liste des # populaires (historique)'
+	table
+		for hashtag in hashtagsList
+			tr
+				td= hashtag.content
+				td= hashtag.month

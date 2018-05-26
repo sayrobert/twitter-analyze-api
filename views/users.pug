@@ -1,0 +1,30 @@
+html
+	head
+		title= 'Liste des personnalités'
+		style
+			include style.css
+	body
+		h1= 'Liste des personnalités'
+	table
+		tr
+			td= 'ID'
+			td= 'Nom de la personnalité'
+			td= 'Pseudo Twitter'
+			td= 'Voir ses tweets du mois courant'
+			td= 'Voir les mots les plus utilisés'
+
+		for person in personList
+			tr
+				td= person.id
+				td= person.name
+				td= person.pseudo
+				td
+					a(href='user/'+person.id+'/tweets') Voir
+				td
+					a(href='wordcloud/'+person.id) Voir
+	div
+		a(href='popularhashtags') Cliquez ici pour voir les hashtags les plus commentés ce mois-ci !
+	div
+		a(href='historytags') Ou alors depuis qu'on existe ;)
+
+

@@ -1,0 +1,18 @@
+html
+	head
+		title= 'Liste des tweets'
+		style
+			include style.css
+	body
+		h1= 'Liste des 10 # populaires du mois'
+	
+	table
+		tr
+			td= '#'
+			td= 'Nombre de fois où il a été utilisé'
+
+		for hashtag in hashtagsList
+			tr
+				td
+					a(href=''+hashtag.content+'/emmanuelmacron') #{hashtag.content}
+				td= hashtag.count

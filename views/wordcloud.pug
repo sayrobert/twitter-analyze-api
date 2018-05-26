@@ -1,0 +1,27 @@
+html
+	head
+		title= 'Liste des mots'
+		script 
+			include jQWCloud/WordCloud/js/lib/jquery-1.7.1.min.js
+		script
+			include jQWCloud/WordCloud/js/lib/jqcloud-1.0.4.min.js
+		script.
+			wordList=!{JSON.stringify(wordList)}
+		script
+			include jQWCloud/WordCloud/js/wordcloud.js
+		style
+			include ../jQWCloud/WordCloud/css/jqcloud.css
+			include style.css
+	body
+		h1= 'Liste des mots utilisés dans le mois'
+	
+	div(id='wordCloud')
+
+	table
+		tr
+			td= 'Mot'
+			td= 'Poids'
+		for word in wordList
+			tr
+				td= word.text
+				td= word.weight
