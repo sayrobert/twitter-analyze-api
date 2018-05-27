@@ -3,43 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const Sequelize = require('sequelize');
-const http = require('http');
-const { Client } = require('pg');
-
-/*
-const { Pool } = require('pg');
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true
-});
-*/
-
-const PORT = process.env.PORT || 5000;
-
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true,
-  });
-
-  client.connect();
-  
-});
-
-app.get('/db', async (req, res) => {
-  try {
-    const client = await client.connect()
-    const result = await client.query('SELECT * FROM test_table');
-    res.render('pages/db', result);
-    client.release();
-  } catch (err) {
-    console.error(err);
-    res.send("Error " + err);
-  }
-});
-
-/*
+ 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
@@ -49,8 +13,8 @@ app.set('view engine', 'pug');
  
 const sql_connect = mysql.createConnection({
     host: 'localhost',
-    user: 'user_api',
-    password: 'apitwitter',
+    user: 'root',
+    password: 'root',
     database: 'twittanalyze'
 });
 
@@ -452,12 +416,6 @@ app.all("*", function (req, res) {
     return res.status(404).send('Page not found')
 });
 
-/*
-app.listen(8080	, function () {
+app.listen(8080, function () {
 	console.log('Node app is running on port 8080');
-});
-*/
-
-app.listen(PORT, () => {
-	console.log(`Server running on ${PORT}/`);
 });
