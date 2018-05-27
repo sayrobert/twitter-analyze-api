@@ -1,0 +1,3 @@
+  [
+    "*/60 * * * * /usr/bin/php $ROOT/index.php"
+  ]
