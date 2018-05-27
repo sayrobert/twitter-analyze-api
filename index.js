@@ -12,16 +12,16 @@ app.use(bodyParser.urlencoded({
 app.set('view engine', 'pug');
  
 const sql_connect = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'twittanalyze'
+    host: 'bnk4bi09l-mysql.services.clever-cloud.com',
+    user: 'ukyzduvz8tlth9yz',
+    password: 'iE8SxlzfKwiz3WobuIf',
+    database: 'bnk4bi09l'
 });
 
 sql_connect.connect();
 
-const sequelize = new Sequelize('twittanalyze', 'root', 'root', {
-  host: 'localhost',
+const sequelize = new Sequelize('bnk4bi09l', 'ukyzduvz8tlth9yz', 'iE8SxlzfKwiz3WobuIf', {
+  host: 'bnk4bi09l-mysql.services.clever-cloud.com',
   dialect: 'mysql',
   operatorsAliases: false,
   define: {
