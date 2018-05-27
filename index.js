@@ -98,6 +98,23 @@ const HistoryTags = sequelize.define('hashtags_history', {
   }
 });
 
+// const Tags = sequelize.define('hashtags', {
+//   date_ajout: {
+//     type: Sequelize.DATE
+//   },
+//   content: {
+//     type: Sequelize.STRING
+//   },
+//   id_tweet: {
+//     type: Sequelize.INTEGER
+//   },
+//   id: {
+//     type: Sequelize.INTEGER,
+//     primaryKey: true
+
+//   }
+// });
+
 // All routes
 app.get('/', function (req, res) {
 
