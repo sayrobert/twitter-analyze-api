@@ -3,6 +3,25 @@ const app = express();
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const Sequelize = require('sequelize');
+/*
+const { Pool } = require('pg');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: true
+});
+*/
+
+const PORT = process.env.PORT || 5000;
+const server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello World\n');
+});
+server.listen(PORT, () => {
+  console.log(`Server running on ${PORT}/`);
+});
+
+/*
  
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -419,3 +438,4 @@ app.all("*", function (req, res) {
 app.listen(8080	, function () {
 	console.log('Node app is running on port 8080');
 });
+*/
