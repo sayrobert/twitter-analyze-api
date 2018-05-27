@@ -13,6 +13,7 @@ const pool = new Pool({
 */
 
 const PORT = process.env.PORT || 5000;
+/*
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
@@ -21,8 +22,8 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
   console.log(`Server running on ${PORT}/`);
 });
+*/
 
-/*
  
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -436,7 +437,12 @@ app.all("*", function (req, res) {
     return res.status(404).send('Page not found')
 });
 
+/*
 app.listen(8080	, function () {
 	console.log('Node app is running on port 8080');
 });
 */
+
+app.listen(PORT, () => {
+	console.log(`Server running on ${PORT}/`);
+});
