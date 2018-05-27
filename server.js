@@ -29,7 +29,7 @@ const server = http.createServer((req, res) => {
 
 app.get('/db', async (req, res) => {
   try {
-    const client = await pool.connect()
+    const client = await client.connect()
     const result = await client.query('SELECT * FROM test_table');
     res.render('pages/db', result);
     client.release();
