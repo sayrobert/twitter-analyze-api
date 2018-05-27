@@ -111,6 +111,7 @@ app.get('/', function (req, res) {
         "Affichage du nombre de fois où le hashtag populaire avec tous les mois/années": hostname + "historytags",
         "Affichage du nombre de fois où le hashtag populaire par mois/année": hostname + "historytags/:month",
         "Affichage du nuage de mots d'une personnalité politique": hostname + "wordcloud/:id",
+        "BONUS : Affichage de toutes les personnalités politiques en front" : hostname + "front/users",
     };
 
     return res.send({ data: results, message: 'Get all routes' })
