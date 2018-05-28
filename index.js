@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const Sequelize = require('sequelize');
  
 app.use(bodyParser.json());
@@ -11,17 +11,17 @@ app.use(bodyParser.urlencoded({
 
 app.set('view engine', 'pug');
  
-const sql_connect = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'twittanalyze'
-});
+// const sql_connect = mysql.createConnection({
+//     host: 'bnk4bi09l-mysql.services.clever-cloud.com',
+//     user: 'ukyzduvz8tlth9yz',
+//     password: 'iE8SxlzfKwiz3WobuIf',
+//     database: 'bnk4bi09l'
+// });
 
-sql_connect.connect();
+// sql_connect.connect();
 
-const sequelize = new Sequelize('twittanalyze', 'root', 'root', {
-  host: 'localhost',
+const sequelize = new Sequelize('bnk4bi09l', 'ukyzduvz8tlth9yz', 'iE8SxlzfKwiz3WobuIf', {
+  host: 'bnk4bi09l-mysql.services.clever-cloud.com',
   dialect: 'mysql',
   operatorsAliases: false,
   define: {
@@ -111,6 +111,7 @@ app.get('/', function (req, res) {
         "Affichage du nombre de fois où le hashtag populaire avec tous les mois/années": hostname + "historytags",
         "Affichage du nombre de fois où le hashtag populaire par mois/année": hostname + "historytags/:month",
         "Affichage du nuage de mots d'une personnalité politique": hostname + "wordcloud/:id",
+        "BONUS : Affichage de toutes les personnalités politiques en front" : hostname + "front/users",
     };
 
     return res.send({ data: results, message: 'Get all routes' })
@@ -191,22 +192,19 @@ app.get('/front/popularhashtags', function (req, res) {
 
     var hashtagsList = [];
     
-    sql_connect.query('SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10', function (error, results, fields) {
-        if (error) { throw error; }
-        else {
-            for (var i = 0; i < results.length; i++) {
+    sequelize.query("SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10").spread((results, metadata) => {
+        for (var i = 0; i < results.length; i++) {
 
-                // Create an object to save current row's data
-                var hashtag = {
-                    'content':results[i].content,
-                    'count':results[i].count
-                }
-                // Add object into array
-                hashtagsList.push(hashtag);
+            // Create an object to save current row's data
+            var hashtag = {
+                'content':results[i].content,
+                'count':results[i].count
             }
-            res.header('Cache-Control', 'public, max-age=3600');
-            res.render('hashtags', {"hashtagsList": hashtagsList});
+            // Add object into array
+            hashtagsList.push(hashtag);
         }
+        res.header('Cache-Control', 'public, max-age=3600');
+        res.render('hashtags', {"hashtagsList": hashtagsList});
     });
 });
 
@@ -270,23 +268,20 @@ app.get('/front/:hashtag/:pseudo', function (req, res) {
 
     if (hashtag != ':hashtag' && pseudo != ':pseudo')
     {
-        sql_connect.query('SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = ? AND u.pseudo = ?', [hashtag, pseudo], function (error, results, fields) {
-            if (error) { throw error; }
-            else {
-                if(results.length==1) {
-                    // Create the object to save the data.
-                    var count = {
-                        'count':results[0].nombredetweets,
-                        'content':results[0].content,
-                        'pseudo':results[0].pseudo
-                    }
-                    // render the details.plug page.
-                    res.header('Cache-Control', 'public, max-age=3600');
-                    res.render('hashtag-user', {"count": count});
-                } else {
-                    // render not found page
-                    res.status(404).json({"status_code":404, "status_message": "Not found"});
+        sequelize.query('SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = ? AND u.pseudo = ?',{ replacements: [hashtag, pseudo], type: sequelize.QueryTypes.SELECT }).then(results => {
+            if(results.length==1) {
+                // Create the object to save the data.
+                var count = {
+                    'count':results[0].nombredetweets,
+                    'content':results[0].content,
+                    'pseudo':results[0].pseudo
                 }
+                // render the details.plug page.
+                res.header('Cache-Control', 'public, max-age=3600');
+                res.render('hashtag-user', {"count": count});
+            } else {
+                // render not found page
+                res.status(404).json({"status_code":404, "status_message": "Not found"});
             }
         });
     }
@@ -354,8 +349,7 @@ app.get('/user/:id/tweets', function (req, res) {
 
 // Get popular hashtags of the month
 app.get('/popularhashtags', function (req, res) {
-    sql_connect.query('SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10', function (error, results, fields) {
-        if (error) throw error;
+    sequelize.query("SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10").spread((results, metadata) => {
         res.header('Cache-Control', 'public, max-age=3600');
         res.send({ error: false, data: results, message: 'Get 10 more popular hashtags.' });
     });
@@ -397,8 +391,7 @@ app.get('/:hashtag/:pseudo', function (req, res) {
 
     if (hashtag != ':hashtag' && pseudo != ':pseudo')
     {
-        sql_connect.query('SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = ? AND u.pseudo = ?', [hashtag, pseudo], function (error, results, fields) {
-            if (error) throw error;
+        sequelize.query('SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = ? AND u.pseudo = ?',{ replacements: [hashtag, pseudo], type: sequelize.QueryTypes.SELECT }).then(results => {
             res.header('Cache-Control', 'public, max-age=3600');
             res.send({ error: false, data: results, message: 'Get count hashtag by person', example: hostname + "/" + hashtag_exemple + "/" + pseudo_exemple });
         });

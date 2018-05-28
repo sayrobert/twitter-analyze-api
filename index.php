@@ -48,4 +48,6 @@
 	
 	// on fait la purge de la base (on retire les anciens tweets et anciens hashtags)
 	purge();
+
+	echo 'Mise à jour OK de la base de données';
 ?>
