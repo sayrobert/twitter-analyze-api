@@ -113,7 +113,7 @@ app.get('/', function (req, res) {
         "Affichage du nuage de mots d'une personnalité politique": hostname + "wordcloud/:id",
         "BONUS : Affichage de toutes les personnalités politiques en front" : hostname + "front/users",
     };
-
+    res.header('Cache-Control', 'public, max-age=3600');
     return res.send({ data: results, message: 'Get all routes' })
 });
 
