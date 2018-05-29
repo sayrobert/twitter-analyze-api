@@ -322,10 +322,12 @@ app.get('/front/:hashtag/:pseudo', function (req, res) {
 
 // Get all users
 app.get('/users', function (req, res) {
+
+    let hostname = req.protocol + '://' + req.get('host') + req.originalUrl;
     User.findAll().then(function(results) 
     {
         res.setHeader('Access-Control-Allow-Headers', '*');
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Origin', hostname);
         res.setHeader('Access-Control-Request-Method', '*');
         res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
         res.header('Cache-Control', 'public, max-age=3600');
