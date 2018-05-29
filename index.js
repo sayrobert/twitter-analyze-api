@@ -114,7 +114,7 @@ app.get('/', function (req, res) {
         "BONUS : Affichage de toutes les personnalités politiques en front" : hostname + "front/users",
     };
 
-    res.setHeader('Access-Control-Allow-Origin', hostname);
+    res.setHeader('Access-Control-Allow-Headers', '*');
     res.header('Cache-Control', 'public, max-age=3600');
     return res.send({ data: results, message: 'Get all routes' })
 });
@@ -134,6 +134,7 @@ app.get('/front/users', function (req, res) {
 
             personList.push(person);
         }
+        res.setHeader('Access-Control-Allow-Headers', '*');
         res.header('Cache-Control', 'public, max-age=3600');
         res.render('users', {"personList": personList});
     });
@@ -156,6 +157,7 @@ app.get('/front/wordcloud/:id', function (req, res) {
 
                 wordList.push(word);
             }
+            res.setHeader('Access-Control-Allow-Headers', '*');
             res.header('Cache-Control', 'public, max-age=3600');
             res.render('wordcloud', {"wordList": wordList});
         });
@@ -183,6 +185,7 @@ app.get('/front/user/:id/tweets', function (req, res) {
                 // Add object into array
                 tweetList.push(tweets);
             }
+            res.setHeader('Access-Control-Allow-Headers', '*');
             res.header('Cache-Control', 'public, max-age=3600');
             res.render('user-tweets', {"tweetList": tweetList});
         });
@@ -205,6 +208,7 @@ app.get('/front/popularhashtags', function (req, res) {
             // Add object into array
             hashtagsList.push(hashtag);
         }
+        res.setHeader('Access-Control-Allow-Headers', '*');
         res.header('Cache-Control', 'public, max-age=3600');
         res.render('hashtags', {"hashtagsList": hashtagsList});
     });
@@ -226,6 +230,7 @@ app.get('/front/historytags', function (req, res) {
             // Add object into array
             hashtagsList.push(hashtag);
         }
+        res.setHeader('Access-Control-Allow-Headers', '*');
         res.header('Cache-Control', 'public, max-age=3600');
         res.render('history-hashtags', {"hashtagsList": hashtagsList});
     });
@@ -252,6 +257,7 @@ app.get('/front/historytags/:month', function (req, res) {
                 // Add object into array
                 hashtagsList.push(hashtag);
             }
+            res.setHeader('Access-Control-Allow-Headers', '*');
             res.header('Cache-Control', 'public, max-age=3600');
             res.render('history-hashtags-month', {"hashtagsList": hashtagsList});
         });
@@ -279,6 +285,7 @@ app.get('/front/:hashtag/:pseudo', function (req, res) {
                     'pseudo':results[0].pseudo
                 }
                 // render the details.plug page.
+                res.setHeader('Access-Control-Allow-Headers', '*');
                 res.header('Cache-Control', 'public, max-age=3600');
                 res.render('hashtag-user', {"count": count});
             } else {
@@ -293,6 +300,7 @@ app.get('/front/:hashtag/:pseudo', function (req, res) {
 app.get('/users', function (req, res) {
     User.findAll().then(function(results) 
     {
+        res.setHeader('Access-Control-Allow-Headers', '*');
         res.header('Cache-Control', 'public, max-age=3600');
         res.send({ error: false, data: results, message: 'Get all users.' });
     });
@@ -306,6 +314,7 @@ app.get('/user/:id', function (req, res) {
 
     if (user_id != ':id') {
         User.findById(user_id).then(function(results) {
+            res.setHeader('Access-Control-Allow-Headers', '*');
             res.header('Cache-Control', 'public, max-age=3600');
             res.send({ error: false, data: results, message: 'Get one user information.', example: hostname + "/user/" + exemple_id });
         });
@@ -323,6 +332,7 @@ app.get('/wordcloud/:id', function (req, res) {
 
     if (user_id != ':id') {
         Wordcloud.findAll({ where: { id_user: user_id } }).then(function(results) {
+            res.setHeader('Access-Control-Allow-Headers', '*');
             res.header('Cache-Control', 'public, max-age=3600');
             res.send({ error: false, data: results, message: 'Get word cloud of a user.', example: hostname + "/wordcloud/" + exemple_id });
         });
@@ -339,7 +349,8 @@ app.get('/user/:id/tweets', function (req, res) {
     let exemple_id = 1976143068;
 
     if (user_id != ':id') {
-        Tweet.findAll({ where: { id_user: user_id } }).then(function(results) {        
+        Tweet.findAll({ where: { id_user: user_id } }).then(function(results) {
+            res.setHeader('Access-Control-Allow-Headers', '*');     
             res.header('Cache-Control', 'public, max-age=3600');
             res.send({ error: false, data: results, message: 'Get tweets of one user.' , example: hostname + "/user/" + exemple_id + "/tweets/" });
         });
@@ -352,6 +363,7 @@ app.get('/user/:id/tweets', function (req, res) {
 // Get popular hashtags of the month
 app.get('/popularhashtags', function (req, res) {
     sequelize.query("SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10").spread((results, metadata) => {
+        res.setHeader('Access-Control-Allow-Headers', '*');
         res.header('Cache-Control', 'public, max-age=3600');
         res.send({ error: false, data: results, message: 'Get 10 more popular hashtags.' });
     });
@@ -360,6 +372,7 @@ app.get('/popularhashtags', function (req, res) {
 // Get all history hashtags
 app.get('/historytags', function (req, res) {
     HistoryTags.findAll().then(function(results) {
+        res.setHeader('Access-Control-Allow-Headers', '*');
         res.header('Cache-Control', 'public, max-age=3600');
         res.send({ error: false, data: results, message: 'Get history hashtags.'});
     });
@@ -373,6 +386,7 @@ app.get('/historytags/:month', function (req, res) {
 
     if (hashtag_month != ':month') {
         HistoryTags.findAll({ where: { month: hashtag_month } }).then(function(results) {
+            res.setHeader('Access-Control-Allow-Headers', '*');
             res.header('Cache-Control', 'public, max-age=3600');
             res.send({ error: false, data: results, message: 'Get history tags.', example: hostname + "/historytags/" + month_exemple });
         });
@@ -394,6 +408,7 @@ app.get('/:hashtag/:pseudo', function (req, res) {
     if (hashtag != ':hashtag' && pseudo != ':pseudo')
     {
         sequelize.query('SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = ? AND u.pseudo = ?',{ replacements: [hashtag, pseudo], type: sequelize.QueryTypes.SELECT }).then(results => {
+            res.setHeader('Access-Control-Allow-Headers', '*');
             res.header('Cache-Control', 'public, max-age=3600');
             res.send({ error: false, data: results, message: 'Get count hashtag by person', example: hostname + "/" + hashtag_exemple + "/" + pseudo_exemple });
         });
