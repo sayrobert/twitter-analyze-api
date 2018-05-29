@@ -115,7 +115,7 @@ app.get('/', function (req, res) {
     };
 
     res.setHeader('Access-Control-Allow-Headers', '*');
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', hostname);
     res.setHeader('Access-Control-Request-Method', '*');
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
     res.header('Cache-Control', 'public, max-age=3600');
@@ -125,6 +125,7 @@ app.get('/', function (req, res) {
 // Get all users
 app.get('/front/users', function (req, res) {
     var personList = [];
+    let hostname = req.protocol + '://' + req.get('host') + req.originalUrl;
 
     User.findAll().then(function(results) {
         for (var i = 0; i < results.length; i++) {
@@ -138,7 +139,7 @@ app.get('/front/users', function (req, res) {
             personList.push(person);
         }
         res.setHeader('Access-Control-Allow-Headers', '*');
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Origin', hostname);
         res.setHeader('Access-Control-Request-Method', '*');
         res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
         res.header('Cache-Control', 'public, max-age=3600');
@@ -151,6 +152,7 @@ app.get('/front/wordcloud/:id', function (req, res) {
 
     var wordList = [];
     let user_id = req.params.id;
+    let hostname = req.protocol + '://' + req.get('host') + req.originalUrl;
 
     if (user_id != ':id') {
         Wordcloud.findAll({ where: { id_user: user_id } }).then(function(results) {
@@ -164,7 +166,7 @@ app.get('/front/wordcloud/:id', function (req, res) {
                 wordList.push(word);
             }
             res.setHeader('Access-Control-Allow-Headers', '*');
-            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Origin', hostname);
             res.setHeader('Access-Control-Request-Method', '*');
             res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
             res.header('Cache-Control', 'public, max-age=3600');
@@ -180,6 +182,7 @@ app.get('/front/user/:id/tweets', function (req, res) {
 
     var tweetList = [];
     let hostname = req.protocol + '://' + req.get('host');
+    let hostnameHeader = req.protocol + '://' + req.get('host') + req.originalUrl;
     let user_id = req.params.id;
     let exemple_id = 1976143068;
 
@@ -195,7 +198,7 @@ app.get('/front/user/:id/tweets', function (req, res) {
                 tweetList.push(tweets);
             }
             res.setHeader('Access-Control-Allow-Headers', '*');
-            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Origin', hostnameHeader);
             res.setHeader('Access-Control-Request-Method', '*');
             res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
             res.header('Cache-Control', 'public, max-age=3600');
@@ -208,6 +211,7 @@ app.get('/front/user/:id/tweets', function (req, res) {
 app.get('/front/popularhashtags', function (req, res) {
 
     var hashtagsList = [];
+    let hostnameHeader = req.protocol + '://' + req.get('host') + req.originalUrl;
     
     sequelize.query("SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10").spread((results, metadata) => {
         for (var i = 0; i < results.length; i++) {
@@ -221,7 +225,7 @@ app.get('/front/popularhashtags', function (req, res) {
             hashtagsList.push(hashtag);
         }
         res.setHeader('Access-Control-Allow-Headers', '*');
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Origin', hostnameHeader);
         res.setHeader('Access-Control-Request-Method', '*');
         res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
         res.header('Cache-Control', 'public, max-age=3600');
@@ -233,6 +237,7 @@ app.get('/front/popularhashtags', function (req, res) {
 app.get('/front/historytags', function (req, res) {
 
     var hashtagsList = [];
+    let hostnameHeader = req.protocol + '://' + req.get('host') + req.originalUrl;
 
     HistoryTags.findAll().then(function(results) {
         for (var i = 0; i < results.length; i++) {
@@ -246,7 +251,7 @@ app.get('/front/historytags', function (req, res) {
             hashtagsList.push(hashtag);
         }
         res.setHeader('Access-Control-Allow-Headers', '*');
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Origin', hostnameHeader);
         res.setHeader('Access-Control-Request-Method', '*');
         res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
         res.header('Cache-Control', 'public, max-age=3600');
@@ -260,6 +265,8 @@ app.get('/front/historytags/:month', function (req, res) {
     var hashtagsList = [];
 
     let hostname = req.protocol + '://' + req.get('host');
+    let hostnameHeader = req.protocol + '://' + req.get('host') + req.originalUrl;
+
     let month_exemple = "052018";
     let hashtag_month = req.params.month;
 
@@ -276,7 +283,7 @@ app.get('/front/historytags/:month', function (req, res) {
                 hashtagsList.push(hashtag);
             }
             res.setHeader('Access-Control-Allow-Headers', '*');
-            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Origin', hostnameHeader);
             res.setHeader('Access-Control-Request-Method', '*');
             res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
             res.header('Cache-Control', 'public, max-age=3600');
@@ -289,6 +296,7 @@ app.get('/front/historytags/:month', function (req, res) {
 app.get('/front/:hashtag/:pseudo', function (req, res) {
 
     let hostname = req.protocol + '://' + req.get('host');
+    let hostnameHeader = req.protocol + '://' + req.get('host') + req.originalUrl;
     let hashtag = req.params.hashtag;
     let pseudo = req.params.pseudo;
 
@@ -307,7 +315,7 @@ app.get('/front/:hashtag/:pseudo', function (req, res) {
                 }
                 // render the details.plug page.
                 res.setHeader('Access-Control-Allow-Headers', '*');
-                res.setHeader('Access-Control-Allow-Origin', '*');
+                res.setHeader('Access-Control-Allow-Origin', hostnameHeader);
                 res.setHeader('Access-Control-Request-Method', '*');
                 res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
                 res.header('Cache-Control', 'public, max-age=3600');
@@ -322,12 +330,12 @@ app.get('/front/:hashtag/:pseudo', function (req, res) {
 
 // Get all users
 app.get('/users', function (req, res) {
-
-    let hostname = req.protocol + '://' + req.get('host') + req.originalUrl;
+    let hostnameHeader = req.protocol + '://' + req.get('host') + req.originalUrl;
+    
     User.findAll().then(function(results) 
     {
         res.setHeader('Access-Control-Allow-Headers', '*');
-        res.setHeader('Access-Control-Allow-Origin', hostname);
+        res.setHeader('Access-Control-Allow-Origin', hostnameHeader);
         res.setHeader('Access-Control-Request-Method', '*');
         res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
         res.header('Cache-Control', 'public, max-age=3600');
@@ -338,13 +346,14 @@ app.get('/users', function (req, res) {
 // Get one user information
 app.get('/user/:id', function (req, res) {
     let hostname = req.protocol + '://' + req.get('host');
+    let hostnameHeader = req.protocol + '://' + req.get('host') + req.originalUrl;
     let user_id = req.params.id;
     let exemple_id = 1976143068;
 
     if (user_id != ':id') {
         User.findById(user_id).then(function(results) {
             res.setHeader('Access-Control-Allow-Headers', '*');
-            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Origin', hostnameHeader);
             res.setHeader('Access-Control-Request-Method', '*');
             res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
             res.header('Cache-Control', 'public, max-age=3600');
@@ -359,13 +368,14 @@ app.get('/user/:id', function (req, res) {
 // Get wordcloud of one user
 app.get('/wordcloud/:id', function (req, res) {
     let hostname = req.protocol + '://' + req.get('host');
+    let hostnameHeader = req.protocol + '://' + req.get('host') + req.originalUrl;
     let user_id = req.params.id;
     let exemple_id = 1976143068;
 
     if (user_id != ':id') {
         Wordcloud.findAll({ where: { id_user: user_id } }).then(function(results) {
             res.setHeader('Access-Control-Allow-Headers', '*');
-            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Origin', hostnameHeader);
             res.setHeader('Access-Control-Request-Method', '*');
             res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
             res.header('Cache-Control', 'public, max-age=3600');
@@ -380,13 +390,14 @@ app.get('/wordcloud/:id', function (req, res) {
 // Get user tweets
 app.get('/user/:id/tweets', function (req, res) {
     let hostname = req.protocol + '://' + req.get('host');
+    let hostnameHeader = req.protocol + '://' + req.get('host') + req.originalUrl;
     let user_id = req.params.id;
     let exemple_id = 1976143068;
 
     if (user_id != ':id') {
         Tweet.findAll({ where: { id_user: user_id } }).then(function(results) {
             res.setHeader('Access-Control-Allow-Headers', '*');
-            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Origin', hostnameHeader);
             res.setHeader('Access-Control-Request-Method', '*');
             res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET'); 
             res.header('Cache-Control', 'public, max-age=3600');
@@ -400,9 +411,12 @@ app.get('/user/:id/tweets', function (req, res) {
 
 // Get popular hashtags of the month
 app.get('/popularhashtags', function (req, res) {
+
+    let hostnameHeader = req.protocol + '://' + req.get('host') + req.originalUrl;
+
     sequelize.query("SELECT content, COUNT(*) count FROM `hashtags` GROUP BY content ORDER BY count DESC LIMIT 10").spread((results, metadata) => {
         res.setHeader('Access-Control-Allow-Headers', '*');
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Origin', hostnameHeader);
         res.setHeader('Access-Control-Request-Method', '*');
         res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
         res.header('Cache-Control', 'public, max-age=3600');
@@ -412,9 +426,12 @@ app.get('/popularhashtags', function (req, res) {
 
 // Get all history hashtags
 app.get('/historytags', function (req, res) {
+
+    let hostnameHeader = req.protocol + '://' + req.get('host') + req.originalUrl;
+
     HistoryTags.findAll().then(function(results) {
         res.setHeader('Access-Control-Allow-Headers', '*');
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Origin', hostnameHeader);
         res.setHeader('Access-Control-Request-Method', '*');
         res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
         res.header('Cache-Control', 'public, max-age=3600');
@@ -425,13 +442,14 @@ app.get('/historytags', function (req, res) {
 // Get history hashtags per month
 app.get('/historytags/:month', function (req, res) {
     let hostname = req.protocol + '://' + req.get('host');
+    let hostnameHeader = req.protocol + '://' + req.get('host') + req.originalUrl;
     let month_exemple = "052018";
     let hashtag_month = req.params.month;
 
     if (hashtag_month != ':month') {
         HistoryTags.findAll({ where: { month: hashtag_month } }).then(function(results) {
             res.setHeader('Access-Control-Allow-Headers', '*');
-            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Origin', hostnameHeader);
             res.setHeader('Access-Control-Request-Method', '*');
             res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
             res.header('Cache-Control', 'public, max-age=3600');
@@ -446,6 +464,8 @@ app.get('/historytags/:month', function (req, res) {
 // Get count of using one hashtag by user
 app.get('/:hashtag/:pseudo', function (req, res) {
     let hostname = req.protocol + '://' + req.get('host');
+    let hostnameHeader = req.protocol + '://' + req.get('host') + req.originalUrl;
+
     let hashtag = req.params.hashtag;
     let pseudo = req.params.pseudo;
 
@@ -456,7 +476,7 @@ app.get('/:hashtag/:pseudo', function (req, res) {
     {
         sequelize.query('SELECT COUNT(*) AS nombredetweets, h.content, u.pseudo FROM tweets t INNER JOIN hashtags h ON t.id = h.id_tweet INNER JOIN user u ON t.id_user = u.id WHERE h.content = ? AND u.pseudo = ?',{ replacements: [hashtag, pseudo], type: sequelize.QueryTypes.SELECT }).then(results => {
             res.setHeader('Access-Control-Allow-Headers', '*');
-            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Origin', hostnameHeader);
             res.setHeader('Access-Control-Request-Method', '*');
             res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
             res.header('Cache-Control', 'public, max-age=3600');
