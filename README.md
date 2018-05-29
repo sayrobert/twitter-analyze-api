@@ -10,7 +10,7 @@ Make sure you have [Node.js](http://nodejs.org/) and the [NPM](https://www.npmjs
 git clone https://github.com/sayrobert/twittanalyze
 cd twittanalyze
 npm install
-node server.js
+node index.js
 ```
 
 Your app should now be running on [localhost:8080](http://localhost:8080/).
